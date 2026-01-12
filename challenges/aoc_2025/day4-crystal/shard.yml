@@ -1,0 +1,13 @@
+name: day4-crystal
+version: 0.1.0
+
+authors:
+  - Jack Glass <jackadrianglass@gmail.com>
+
+targets:
+  day4-crystal:
+    main: src/day4-crystal.cr
+
+crystal: '>= 1.18.2'
+
+license: MIT
