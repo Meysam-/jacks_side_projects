@@ -1,2 +1,2 @@
 require "spec"
-require "../src/day4-crystal"
+require "../src/day4"

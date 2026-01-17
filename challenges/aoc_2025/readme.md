@@ -77,5 +77,11 @@ Cons:
 
 # Crystal
 
+Didn't really find anything that sparked interest in the language, nor did I really find it all that enjoyable. Definitely not the language for me
+
 Cons:
 - No official treesitter grammar (though an unofficial one exists [here](https://github.com/crystal-lang-tools/tree-sitter-crystal))
+- I don't like the testing framework so far
+- Missed opportunity for piping or dot call syntax
+- Lots of sugar that just doesn't seem important
+

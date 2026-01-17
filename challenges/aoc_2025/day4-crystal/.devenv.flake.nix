@@ -4,12 +4,12 @@
       vars = {
   version = "1.11.2";
   system = "aarch64-darwin";
-  devenv_root = "/Users/glassjack/builds/haskell_projects/aoc-twenty-five/day4-crystal";
-  project_input_ref = "path:/Users/glassjack/builds/haskell_projects/aoc-twenty-five/day4-crystal";
-  devenv_dotfile = "/Users/glassjack/builds/haskell_projects/aoc-twenty-five/day4-crystal/.devenv";
+  devenv_root = "/Users/glassjack/builds/side_projects/challenges/aoc_2025/day4-crystal";
+  project_input_ref = "path:/Users/glassjack/builds/side_projects/challenges/aoc_2025/day4-crystal";
+  devenv_dotfile = "/Users/glassjack/builds/side_projects/challenges/aoc_2025/day4-crystal/.devenv";
   devenv_dotfile_path = ./.devenv;
   devenv_tmpdir = "/var/folders/sv/2s5sxzy959l67dw373bnzznm0000gn/T/";
-  devenv_runtime = "/var/folders/sv/2s5sxzy959l67dw373bnzznm0000gn/T/devenv-f781bd6";
+  devenv_runtime = "/var/folders/sv/2s5sxzy959l67dw373bnzznm0000gn/T/devenv-c9b822b";
   devenv_istesting = false;
   devenv_direnvrc_latest_version = 1;
   container_name = null;
@@ -17,7 +17,7 @@
   ];
   hostname = "Jacks-MacBook-Air.local";
   username = "glassjack";
-  git_root = "/Users/glassjack/builds/haskell_projects";
+  git_root = "/Users/glassjack/builds/side_projects";
   secretspec = null;
 };
     in
@@ -41,12 +41,12 @@
       vars = {
   version = "1.11.2";
   system = "aarch64-darwin";
-  devenv_root = "/Users/glassjack/builds/haskell_projects/aoc-twenty-five/day4-crystal";
-  project_input_ref = "path:/Users/glassjack/builds/haskell_projects/aoc-twenty-five/day4-crystal";
-  devenv_dotfile = "/Users/glassjack/builds/haskell_projects/aoc-twenty-five/day4-crystal/.devenv";
+  devenv_root = "/Users/glassjack/builds/side_projects/challenges/aoc_2025/day4-crystal";
+  project_input_ref = "path:/Users/glassjack/builds/side_projects/challenges/aoc_2025/day4-crystal";
+  devenv_dotfile = "/Users/glassjack/builds/side_projects/challenges/aoc_2025/day4-crystal/.devenv";
   devenv_dotfile_path = ./.devenv;
   devenv_tmpdir = "/var/folders/sv/2s5sxzy959l67dw373bnzznm0000gn/T/";
-  devenv_runtime = "/var/folders/sv/2s5sxzy959l67dw373bnzznm0000gn/T/devenv-f781bd6";
+  devenv_runtime = "/var/folders/sv/2s5sxzy959l67dw373bnzznm0000gn/T/devenv-c9b822b";
   devenv_istesting = false;
   devenv_direnvrc_latest_version = 1;
   container_name = null;
@@ -54,7 +54,7 @@
   ];
   hostname = "Jacks-MacBook-Air.local";
   username = "glassjack";
-  git_root = "/Users/glassjack/builds/haskell_projects";
+  git_root = "/Users/glassjack/builds/side_projects";
   secretspec = null;
 };
       devenv =

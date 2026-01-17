@@ -1,12 +1,12 @@
-name: day4-crystal
+name: day4
 version: 0.1.0
 
 authors:
   - Jack Glass <jackadrianglass@gmail.com>
 
 targets:
-  day4-crystal:
-    main: src/day4-crystal.cr
+  day4:
+    main: src/day4.cr
 
 crystal: '>= 1.18.2'
 
