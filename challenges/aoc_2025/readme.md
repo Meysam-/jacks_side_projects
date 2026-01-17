@@ -5,7 +5,7 @@ Doing each day in a different language
 - [x] Day 1: Haskell
 - [x] Day 2: OCaml
 - [x] Day 3: Nim
-- [ ] Day 4: Crystal
+- [x] Day 4: Crystal
 - [ ] Day 5: Scala
 - [ ] Day 6: Clojure
 - [ ] Day 7: Gleam
