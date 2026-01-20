@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO NATS Bridge</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .subscribe-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .feeds-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .feed {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px;
+        }
+        .feed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .feed-title {
+            font-weight: bold;
+            color: #333;
+        }
+        .close-feed {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .close-feed:hover {
+            background-color: #c82333;
+        }
+        .messages {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        .message {
+            padding: 8px;
+            margin-bottom: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 3px solid #007bff;
+        }
+        .message-header {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .message-content {
+            font-family: monospace;
+            font-size: 13px;
+            background-color: white;
+            padding: 5px;
+            border-radius: 2px;
+        }
+        .connection-status {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .lists-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .active-subscriptions {
+            margin-top: 0;
+        }
+        .available-listeners {
+            margin-top: 0;
+        }
+        .subscription-list, .listener-list {
+            list-style: none;
+            padding: 0;
+        }
+        .subscription-item {
+            background-color: #e9ecef;
+            padding: 5px 10px;
+            margin: 2px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .listener-item {
+            background-color: #e3f2fd;
+            padding: 8px 12px;
+            margin: 2px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            cursor: pointer;
+            border: 1px solid #2196f3;
+            transition: background-color 0.2s;
+        }
+        .listener-item:hover {
+            background-color: #bbdefb;
+        }
+        .send-message-form {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .message-inputs {
+            display: flex;
+            gap: 8px;
+        }
+        .message-name-input {
+            flex: 1;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .message-payload-input {
+            flex: 2;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .send-message-btn {
+            padding: 6px 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .send-message-btn:hover {
+            background-color: #218838;
+        }
+        .send-message-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Socket.IO NATS Bridge Client</h1>
+        
+        <div id="connection-status" class="connection-status disconnected">
+            Disconnected
+        </div>
+        
+        <div class="subscribe-form">
+            <input type="text" id="subject-input" placeholder="Enter NATS subject to subscribe to" />
+            <button id="subscribe-btn" onclick="subscribeToSubject()" disabled>Subscribe</button>
+        </div>
+        
+        <div class="lists-container">
+            <div class="active-subscriptions">
+                <h3>Active Subscriptions:</h3>
+                <ul id="subscription-list" class="subscription-list"></ul>
+            </div>
+            
+            <div class="available-listeners">
+                <h3>Available Listeners:</h3>
+                <ul id="listener-list" class="listener-list"></ul>
+            </div>
+        </div>
+    </div>
+    
+    <div id="feeds-container" class="feeds-container"></div>
+    
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        let socket;
+        const feeds = new Map();
+        const subscriptions = new Set();
+        const availableListeners = new Set();
+        
+        function initializeSocket() {
+            socket = io();
+            
+            socket.on('connect', () => {
+                console.log('Connected to server');
+                updateConnectionStatus(true);
+                document.getElementById('subscribe-btn').disabled = false;
+            });
+            
+            socket.on('disconnect', () => {
+                console.log('Disconnected from server');
+                updateConnectionStatus(false);
+                document.getElementById('subscribe-btn').disabled = true;
+            });
+            
+            // Listen for listener events specifically
+            socket.on('listener', (data) => {
+                console.log('Received listener event:', data);
+                handleListenerEvent(data);
+            });
+            
+            // Listen for any incoming events
+            socket.onAny((eventName, data) => {
+                console.log('Received event:', eventName, data);
+                handleIncomingMessage(eventName, data);
+            });
+        }
+        
+        function updateConnectionStatus(connected) {
+            const statusEl = document.getElementById('connection-status');
+            if (connected) {
+                statusEl.textContent = 'Connected';
+                statusEl.className = 'connection-status connected';
+            } else {
+                statusEl.textContent = 'Disconnected';
+                statusEl.className = 'connection-status disconnected';
+            }
+        }
+        
+        function subscribeToSubject() {
+            const subjectInput = document.getElementById('subject-input');
+            const subject = subjectInput.value.trim();
+            
+            if (!subject) {
+                alert('Please enter a subject');
+                return;
+            }
+            
+            if (subscriptions.has(subject)) {
+                alert('Already subscribed to this subject');
+                return;
+            }
+            
+            console.log('Subscribing to subject:', subject);
+            socket.emit('subscribe', subject);
+            
+            subscriptions.add(subject);
+            createFeed(subject);
+            updateSubscriptionList();
+            
+            subjectInput.value = '';
+        }
+        
+        function createFeed(subject) {
+            const feedsContainer = document.getElementById('feeds-container');
+            
+            const feedDiv = document.createElement('div');
+            feedDiv.className = 'feed';
+            feedDiv.id = `feed-${subject}`;
+            
+            feedDiv.innerHTML = `
+                <div class="feed-header">
+                    <span class="feed-title">Subject: ${subject}</span>
+                    <button class="close-feed" onclick="closeFeed('${subject}')" title="Close feed">×</button>
+                </div>
+                <div class="messages" id="messages-${subject}"></div>
+                <div class="send-message-form">
+                    <div class="message-inputs">
+                        <input type="text" class="message-name-input" id="message-name-${subject}" placeholder="Message name" />
+                        <input type="text" class="message-payload-input" id="message-payload-${subject}" placeholder="Message payload" />
+                        <button class="send-message-btn" onclick="sendMessage('${subject}')">Send</button>
+                    </div>
+                </div>
+            `;
+            
+            feedsContainer.appendChild(feedDiv);
+            feeds.set(subject, []);
+            
+            // Add enter key handlers for the message inputs
+            const messageNameInput = document.getElementById(`message-name-${subject}`);
+            const messagePayloadInput = document.getElementById(`message-payload-${subject}`);
+            
+            [messageNameInput, messagePayloadInput].forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        sendMessage(subject);
+                    }
+                });
+            });
+        }
+        
+        function closeFeed(subject) {
+            const feedEl = document.getElementById(`feed-${subject}`);
+            if (feedEl) {
+                feedEl.remove();
+            }
+            feeds.delete(subject);
+            subscriptions.delete(subject);
+            updateSubscriptionList();
+        }
+        
+        function handleIncomingMessage(eventName, data) {
+            // Extract subject from event name (format: subject/message)
+            const parts = eventName.split('/');
+            if (parts.length < 2) return;
+            
+            const subject = parts[0];
+            const messageType = parts.slice(1).join('/');
+            
+            if (!feeds.has(subject)) return;
+            
+            const message = {
+                timestamp: new Date().toLocaleTimeString(),
+                event: eventName,
+                subject: subject,
+                messageType: messageType,
+                data: data
+            };
+            
+            feeds.get(subject).push(message);
+            displayMessage(subject, message);
+        }
+        
+        function displayMessage(subject, message) {
+            const messagesEl = document.getElementById(`messages-${subject}`);
+            if (!messagesEl) return;
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            
+            let dataDisplay;
+            if (typeof message.data === 'object') {
+                dataDisplay = JSON.stringify(message.data, null, 2);
+            } else if (message.data instanceof ArrayBuffer || message.data instanceof Uint8Array) {
+                // Handle binary data
+                const decoder = new TextDecoder('utf-8', { fatal: false });
+                try {
+                    dataDisplay = decoder.decode(message.data);
+                } catch (e) {
+                    dataDisplay = '[Binary data - ' + message.data.byteLength + ' bytes]';
+                }
+            } else {
+                dataDisplay = String(message.data);
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    [${message.timestamp}] Event: ${message.event}
+                </div>
+                <div class="message-content">${dataDisplay}</div>
+            `;
+            
+            messagesEl.appendChild(messageDiv);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+        
+        function sendMessage(subject) {
+            const messageNameInput = document.getElementById(`message-name-${subject}`);
+            const messagePayloadInput = document.getElementById(`message-payload-${subject}`);
+            
+            const messageName = messageNameInput.value.trim();
+            const messagePayload = messagePayloadInput.value.trim();
+            
+            if (!messageName) {
+                alert('Please enter a message name');
+                messageNameInput.focus();
+                return;
+            }
+            
+            if (!messagePayload) {
+                alert('Please enter a message payload');
+                messagePayloadInput.focus();
+                return;
+            }
+            
+            // Create the event name in the format expected by the server: subject/messageName
+            const eventName = `${subject}/${messageName}`;
+            
+            console.log('Sending message:', eventName, messagePayload);
+            socket.emit(eventName, messagePayload);
+            
+            // Clear the inputs after sending
+            messageNameInput.value = '';
+            messagePayloadInput.value = '';
+            
+            // Focus back to message name input for easy follow-up messages
+            messageNameInput.focus();
+        }
+        
+        function handleListenerEvent(data) {
+            // Handle listener events - add subjects to available listeners list
+            if (data && typeof data === 'string') {
+                // Single subject
+                availableListeners.add(data);
+            } else if (Array.isArray(data)) {
+                // Array of subjects
+                data.forEach(subject => availableListeners.add(subject));
+            } else if (data && data.subject) {
+                // Object with subject property
+                availableListeners.add(data.subject);
+            }
+            
+            updateListenerList();
+        }
+        
+        function subscribeToListener(subject) {
+            // Fill the input field and trigger subscription
+            const subjectInput = document.getElementById('subject-input');
+            subjectInput.value = subject;
+            subscribeToSubject();
+        }
+        
+        function updateListenerList() {
+            const listEl = document.getElementById('listener-list');
+            listEl.innerHTML = '';
+            
+            if (availableListeners.size === 0) {
+                const li = document.createElement('li');
+                li.textContent = 'No available listeners';
+                li.style.fontStyle = 'italic';
+                li.style.color = '#666';
+                listEl.appendChild(li);
+                return;
+            }
+            
+            availableListeners.forEach(subject => {
+                const li = document.createElement('li');
+                li.className = 'listener-item';
+                li.textContent = subject;
+                li.title = `Click to subscribe to ${subject}`;
+                li.onclick = () => subscribeToListener(subject);
+                listEl.appendChild(li);
+            });
+        }
+        
+        function updateSubscriptionList() {
+            const listEl = document.getElementById('subscription-list');
+            listEl.innerHTML = '';
+            
+            if (subscriptions.size === 0) {
+                const li = document.createElement('li');
+                li.textContent = 'No active subscriptions';
+                li.style.fontStyle = 'italic';
+                li.style.color = '#666';
+                listEl.appendChild(li);
+                return;
+            }
+            
+            subscriptions.forEach(subject => {
+                const li = document.createElement('li');
+                li.className = 'subscription-item';
+                li.textContent = subject;
+                listEl.appendChild(li);
+            });
+        }
+        
+        // Handle Enter key in subject input
+        document.getElementById('subject-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                subscribeToSubject();
+            }
+        });
+        
+        // Initialize the socket connection
+        initializeSocket();
+        updateSubscriptionList();
+        updateListenerList();
+    </script>
+</body>
+</html>

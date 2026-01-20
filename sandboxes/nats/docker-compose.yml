@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  nats:
+    image: nats:2.10-alpine
+    ports:
+      - "4222:4222"
+      - "8222:8222"  # HTTP monitoring port
+      - "6222:6222"  # Cluster port
+    command: ["-js", "-m", "8222"]  # Enable JetStream and monitoring
+    networks:
+      - nats-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # WebSocket Server
+  server:
+    build:
+      context: .
+      dockerfile: server.Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      nats:
+        condition: service_healthy
+    networks:
+      - nats-network
+    environment:
+      - RUST_LOG=info
+    restart: unless-stopped
+
+  listener1:
+    build:
+      context: .
+      dockerfile: listener.Dockerfile
+    depends_on:
+      - nats
+    networks:
+      - nats-network
+    environment:
+      - RUST_LOG=info
+      - LISTENER_ID=1
+      - NATS_URL=nats://nats:4222
+
+  listener2:
+    build:
+      context: .
+      dockerfile: listener.Dockerfile
+    depends_on:
+      - nats
+    networks:
+      - nats-network
+    environment:
+      - RUST_LOG=info
+      - LISTENER_ID=1
+      - NATS_URL=nats://nats:4222
+
+  listener3:
+    build:
+      context: .
+      dockerfile: listener.Dockerfile
+    depends_on:
+      - nats
+    networks:
+      - nats-network
+    environment:
+      - RUST_LOG=info
+      - LISTENER_ID=1
+      - NATS_URL=nats://nats:4222
+
+networks:
+  nats-network:
+    driver: bridge
+
+volumes:
+  nats-data:

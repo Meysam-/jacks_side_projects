@@ -1,0 +1,12 @@
+# Rust build artifacts
+target/
+docker-build.sh
+
+# Development files
+**/.git
+**/.gitignore
+**/.vscode
+**/.idea
+**/*.rs.bk
+**/.rustfmt.toml
+**/.cargo-ok

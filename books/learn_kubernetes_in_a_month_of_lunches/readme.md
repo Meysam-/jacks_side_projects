@@ -24,9 +24,9 @@ K8S basically receives a manifest of the application that you want to run and de
 
 Key terms in k8s
 - `pod`: The smallest k8s resource. Responsible for managing containers
-- `service`
+- `deployment`: A specification for a desired state in the cluster
+- `service`: A spec for the DNS to route traffic to pods
 - `volume`
-- `deployment`
 - `replicaset`
 - `statefulset`
 - `configmap`
