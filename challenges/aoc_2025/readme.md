@@ -6,7 +6,7 @@ Doing each day in a different language
 - [x] Day 2: OCaml
 - [x] Day 3: Nim
 - [x] Day 4: Crystal
-- [ ] Day 5: Scala
+- [x] Day 5: Scala
 - [ ] Day 6: Clojure
 - [ ] Day 7: Gleam
 - [ ] Day 8: Idris
@@ -18,10 +18,8 @@ Doing each day in a different language
 Languages to maybe switch out with
 - https://vale.dev/
 - https://hylo-lang.org/ (research language... maybe not?)
-- https://raku.org/
 - https://www.ponylang.io/
 - https://www.unison-lang.org/
-- https://koka-lang.github.io/koka/doc/index.html
 
 Why you might ask? Honestly just to see if any of them seem like a fun hobby language or if any of them really spark joy. So far my favorite is Rust.
 
@@ -85,3 +83,16 @@ Cons:
 - Missed opportunity for piping or dot call syntax
 - Lots of sugar that just doesn't seem important
 
+# Scala
+
+Definitely interesting as a language in a lot of respects. But the interesting bits are the same things that other functional programming languages have that interest me. Probably would just keep to the other ones
+
+Pros:
+- Has some pretty neat syntax
+- Love the functional stuff
+
+Cons:
+- Still very object oriented. Not generally a fan of that style and it would be hard to get away from in Scala
+- I found the documentation around libraries hard to navigate. Maybe I'm just dumb but it was difficult to find the thing that I wanted. More often ended up on the "walk through" page but that wasn't super enlightening.
+- Error messages weren't easy to parse sometimes
+- Build times were weirdly long for how simple of an application it was (just a cli)
