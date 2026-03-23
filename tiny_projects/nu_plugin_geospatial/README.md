@@ -33,3 +33,8 @@ try {
 ```
 
 Then restart your nushell
+
+Example of how to use it:
+```
+"POINT(1 1)" | from wkt | into wkb
+```
